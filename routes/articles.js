@@ -5,8 +5,8 @@ const isAuth = require('../middleware/isAuth')
 const articles_model = require("../models/articles.model");
 
 router.get("/", async (req, res) => {
-  const { limit = 6, offset = 0, href = "" } = req.query;
-  const myJson = await articles_model.get(limit, offset, href);
+  const { limit = 6, offset = 0, href = "", categories = "all" } = req.query;
+  const myJson = await articles_model.get(limit, offset, href, categories);
   res.json(myJson);
 });
 router.post("/", isAuth, async (req, res) => {

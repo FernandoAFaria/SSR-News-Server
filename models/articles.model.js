@@ -1,25 +1,29 @@
 const db = require("../database/db");
 
-function returnSqlQuery(limit, offset, href) {
+function returnSqlQuery(limit, offset, href, categories) {
   let cleanedLimit = db.fmlWeekly.escape(parseInt(limit));
   let cleanedOffset = db.fmlWeekly.escape(parseInt(offset));
   let cleanedHref;
+  let  cleanedCategories = db.fmlWeekly.escape(categories)
   let sqlQuery = "";
   if (href !== "") {
     cleanedHref = db.fmlWeekly.escape(href);
     sqlQuery = `SELECT * from articles_table WHERE is_active='1' AND href=${cleanedHref} ORDER BY publish_date DESC LIMIT ${cleanedLimit}`;
-  } else {
-
+  } else if(categories === "all") {
     sqlQuery = `SELECT * from articles_table a INNER JOIN articles_count_table c ON a.id = c.id where a.is_active = 1 ORDER BY a.publish_date DESC LIMIT ${cleanedLimit} OFFSET ${cleanedOffset}`;
+  } else {
+   
+    sqlQuery = `SELECT * from articles_table a INNER JOIN articles_count_table c ON a.id = c.id where a.is_active = 1 AND a.categories = ${cleanedCategories} ORDER BY a.publish_date DESC LIMIT ${cleanedLimit} OFFSET ${cleanedOffset}`;
+
   }
 
   return sqlQuery;
 }
 
 module.exports = {
-  get: async function(limit, offset, href) {
+  get: async function(limit, offset, href, categories) {
     return new Promise((resolve, reject) => {
-      db.fmlWeekly.query(returnSqlQuery(limit,offset,href),
+      db.fmlWeekly.query(returnSqlQuery(limit,offset,href,categories),
         (err, results) => {
           if (err) {
             reject(err);
