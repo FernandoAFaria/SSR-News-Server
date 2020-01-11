@@ -1,8 +1,9 @@
 const db = require("../database/db");
 
 function returnKeywordMatch(keywordArr) {
+  if(typeof(keywordArr) === 'string') return `AND a.keywords LIKE '%${keywordArr}%'`
   let sql = `AND (a.keywords LIKE '%${keywordArr[0]}%'`;
-  if (keywordArr.length > 1) {
+  if (keywordArr.length > 0) {
     for (let i = 1; i < keywordArr.length; i++) {
       sql += ` OR a.keywords LIKE '%${keywordArr[i]}%'`;
     }
@@ -33,10 +34,10 @@ function returnSqlQuery(limit, offset, href, keywords) {
 
 module.exports = {
   get: async function(limit, offset, href, keywords) {
-    let keywordArr = keywords.length === 0 ? keywords : keywords.split(" ");
+   
     return new Promise((resolve, reject) => {
       db.fmlWeekly.query(
-        returnSqlQuery(limit, offset, href, keywordArr),
+        returnSqlQuery(limit, offset, href, keywords),
         (err, results) => {
           if (err) {
             reject(err);
@@ -48,7 +49,7 @@ module.exports = {
     });
   },
   put: async function(id, body) {
-    console.log("videos model");
+   
     const {
       title,
       intro,
@@ -102,10 +103,11 @@ module.exports = {
       is_active,
       is_feature,
       categories,
-      keywords
+      keywords,
+      publish_date
     } = body;
     const sqlQuery = `
-    INSERT INTO videos_table (title,intro,originated,content_block,media,url,href,is_active,is_feature,categories,keywords)
+    INSERT INTO videos_table (title,intro,originated,content_block,media,url,href,publish_date,is_active,is_feature,categories,keywords)
     VALUES (${db.fmlWeekly.escape(title)},
     ${db.fmlWeekly.escape(intro)},
     ${db.fmlWeekly.escape(originated)},
@@ -113,6 +115,7 @@ module.exports = {
     ${db.fmlWeekly.escape(media)},
     ${db.fmlWeekly.escape(url)},
     ${db.fmlWeekly.escape(href)},
+    ${db.fmlWeekly.escape(publish_date)},
     ${db.fmlWeekly.escape(is_active)},
     ${db.fmlWeekly.escape(is_feature)},
     ${db.fmlWeekly.escape(categories)},
@@ -129,6 +132,6 @@ module.exports = {
     });
   },
   delete: async function() {
-    console.log("delete");
+  
   }
 };

@@ -7,7 +7,7 @@ const localStrategy = require("passport-local");
 
 passport.use(
   new localStrategy((username, password, done) => {
-    if (username === "test" && password === "password") {
+    if (username === "tdiddykungfury" && password === "fudgemylife1!") {
       return done(null, { name: "john", access: 1 });
     }
     return done(null, false, { message: "incorrect password" });

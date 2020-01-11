@@ -6,6 +6,7 @@ const videos_model = require("../models/videos.model");
 
 router.get("/", async (req, res) => {
   const { limit = 6, offset = 0, href = "", keywords = [] } = req.query;
+  
   const myJson = await videos_model.get(limit, offset, href, keywords);
   res.json(myJson);
 });
