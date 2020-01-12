@@ -26,7 +26,7 @@ function returnSqlQuery(limit, offset, href, keywords) {
       keywords
     )} ORDER BY a.publish_date DESC LIMIT ${cleanedLimit} OFFSET ${cleanedOffset}`;
   } else {
-    sqlQuery = `SELECT * from videos_table a INNER JOIN videos_count_table c ON a.id = c.id where a.is_active = 1 ORDER BY a.id DESC LIMIT ${cleanedLimit} OFFSET ${cleanedOffset}`;
+    sqlQuery = `SELECT * from videos_table a INNER JOIN videos_count_table c ON a.id = c.id where a.is_active = 1 ORDER BY a.publish_date DESC LIMIT ${cleanedLimit} OFFSET ${cleanedOffset}`;
   }
 
   return sqlQuery;
