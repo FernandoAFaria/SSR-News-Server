@@ -10,14 +10,17 @@ router.get("/", async (req, res) => {
     offset = 0,
     href = "",
     categories = "all",
-    keywords = []
+    keywords = [],
+    viewAll = 'false'
   } = req.query;
+  console.log(req.query)
   const myJson = await articles_model.get(
     limit,
     offset,
     href,
     categories,
-    keywords
+    keywords,
+    viewAll
   );
   res.json(myJson);
 });

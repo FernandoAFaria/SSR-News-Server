@@ -5,9 +5,9 @@ const isAuth = require("../middleware/isAuth");
 const videos_model = require("../models/videos.model");
 
 router.get("/", async (req, res) => {
-  const { limit = 6, offset = 0, href = "", keywords = [] } = req.query;
+  const { limit = 6, offset = 0, href = "", keywords = [], viewAll = 'false' } = req.query;
   
-  const myJson = await videos_model.get(limit, offset, href, keywords);
+  const myJson = await videos_model.get(limit, offset, href, keywords, viewAll);
   res.json(myJson);
 });
 router.post("/", isAuth, async (req, res) => {

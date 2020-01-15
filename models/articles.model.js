@@ -13,7 +13,7 @@ function returnKeywordMatch(keywordArr) {
   return sql;
 }
 
-function returnSqlQuery(limit, offset, href, categories, keywords) {
+function returnSqlQuery(limit, offset, href, categories, keywords, all) {
   let cleanedLimit = db.fmlWeekly.escape(parseInt(limit));
   let cleanedOffset = db.fmlWeekly.escape(parseInt(offset));
   let cleanedHref;
@@ -22,7 +22,10 @@ function returnSqlQuery(limit, offset, href, categories, keywords) {
   if (href !== "") {
     cleanedHref = db.fmlWeekly.escape(href);
     sqlQuery = `SELECT * from articles_table WHERE is_active='1' AND href=${cleanedHref} ORDER BY publish_date DESC LIMIT ${cleanedLimit}`;
-  } else if (categories === "all" && keywords.length === 0) {
+  }else if (all === 'true'){
+    sqlQuery = `SELECT * from articles_table`;
+  } 
+  else if (categories === "all" && keywords.length === 0) {
     sqlQuery = `SELECT * from articles_table a INNER JOIN articles_count_table c ON a.id = c.id where a.is_active = 1 ORDER BY a.publish_date DESC LIMIT ${cleanedLimit} OFFSET ${cleanedOffset}`;
   } else if (categories === "all" && keywords.length !== 0) {
     //function to create keyword matching
@@ -32,17 +35,17 @@ function returnSqlQuery(limit, offset, href, categories, keywords) {
   } else {
     sqlQuery = `SELECT * from articles_table a INNER JOIN articles_count_table c ON a.id = c.id where a.is_active = 1 AND a.categories = ${cleanedCategories} ORDER BY a.publish_date DESC LIMIT ${cleanedLimit} OFFSET ${cleanedOffset}`;
   }
-
+  console.log(all)
   return sqlQuery;
 }
 
 module.exports = {
-  get: async function(limit, offset, href, categories, keywords) {
+  get: async function(limit, offset, href, categories, keywords, viewAll) {
    
 
     return new Promise((resolve, reject) => {
       db.fmlWeekly.query(
-        returnSqlQuery(limit, offset, href, categories, keywords),
+        returnSqlQuery(limit, offset, href, categories, keywords,viewAll),
         (err, results) => {
           if (err) {
             reject(err);

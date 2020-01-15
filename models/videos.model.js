@@ -1,7 +1,8 @@
 const db = require("../database/db");
 
 function returnKeywordMatch(keywordArr) {
-  if(typeof(keywordArr) === 'string') return `AND a.keywords LIKE '%${keywordArr}%'`
+  if (typeof keywordArr === "string")
+    return `AND a.keywords LIKE '%${keywordArr}%'`;
   let sql = `AND (a.keywords LIKE '%${keywordArr[0]}%'`;
   if (keywordArr.length > 0) {
     for (let i = 1; i < keywordArr.length; i++) {
@@ -12,7 +13,7 @@ function returnKeywordMatch(keywordArr) {
   return sql;
 }
 
-function returnSqlQuery(limit, offset, href, keywords) {
+function returnSqlQuery(limit, offset, href, keywords, viewAll) {
   let cleanedLimit = db.fmlWeekly.escape(parseInt(limit));
   let cleanedOffset = db.fmlWeekly.escape(parseInt(offset));
   let cleanedHref;
@@ -20,6 +21,8 @@ function returnSqlQuery(limit, offset, href, keywords) {
   if (href !== "") {
     cleanedHref = db.fmlWeekly.escape(href);
     sqlQuery = `SELECT * from videos_table WHERE is_active='1' AND href=${cleanedHref} ORDER BY id DESC LIMIT ${cleanedLimit}`;
+  } else if (viewAll === "true") {
+    sqlQuery = `SELECT * from videos_table`;
   } else if (keywords.length !== 0) {
     //function to create keyword matching
     sqlQuery = `SELECT * from videos_table a INNER JOIN videos_count_table c ON a.id = c.id where a.is_active = 1 ${returnKeywordMatch(
@@ -33,11 +36,10 @@ function returnSqlQuery(limit, offset, href, keywords) {
 }
 
 module.exports = {
-  get: async function(limit, offset, href, keywords) {
-   
+  get: async function(limit, offset, href, keywords, viewAll) {
     return new Promise((resolve, reject) => {
       db.fmlWeekly.query(
-        returnSqlQuery(limit, offset, href, keywords),
+        returnSqlQuery(limit, offset, href, keywords, viewAll),
         (err, results) => {
           if (err) {
             reject(err);
@@ -49,7 +51,6 @@ module.exports = {
     });
   },
   put: async function(id, body) {
-   
     const {
       title,
       intro,
@@ -131,7 +132,5 @@ module.exports = {
       });
     });
   },
-  delete: async function() {
-  
-  }
+  delete: async function() {}
 };
